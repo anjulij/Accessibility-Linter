@@ -21,6 +21,17 @@ jobs:
       - run:
           name: "Say hello"
           command: "echo Hello, World!"
+    eslint:
+      docker:
+        - image: cimg/node:20.11  # Use a Node image so we can run ESLint
+      steps:
+        - checkout
+        - run:
+            name: Install dependencies
+            command: npm ci
+        - run:
+            name: Run ESLint
+            command: npx eslint .
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/guides/orchestrate/workflows/ & https://circleci.com/docs/reference/configuration-reference/#workflows
@@ -29,3 +40,4 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - say-hello
+      - eslint
