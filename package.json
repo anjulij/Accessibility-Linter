@@ -6,10 +6,13 @@
   "engines": {
     "vscode": "^1.104.0"
   },
-  "categories": [
+  "categories": [        
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:commandId"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
