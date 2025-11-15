@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import postcss, { Root } from 'postcss';
 import {
   ensureAuth,
   getAuthStatus,
@@ -7,19 +8,26 @@ import {
   AUTH_REQUIRED,
   AuthState
 } from './auth';
+import { stringify } from 'querystring';
 
-// Demo pipeline stubs (replace with real implementation later)
-async function parse(css: string) {
-  // Convert raw CSS to an AST (placeholder)
-  return { ast: { length: css.length } };
+
+async function parse(css: string): Promise<Root> {
+	const root = postcss.parse(css)
+
+	console.log('PostCSS AST');
+	console.log(JSON.stringify(root, null, 2))
+
+	return root;
 }
 
-async function runRules(ast: { length: number }) {
+async function runRules(root: Root) {
   // Apply rule filters to the AST (placeholder)
   // Produces 1 fake issue when the length is odd
-  return ast.length % 2 === 0
-    ? []
-    : [{ rule: 'demo-odd-length', message: 'Length is odd' }];
+	const length = root.toString().length;
+
+	return length % 2 === 0
+		? []
+		: [{ rule: 'demo-odd-length', message: 'Length is odd' }];
 }
 
 function handleAuthState(
@@ -122,24 +130,33 @@ export function activate(context: vscode.ExtensionContext) {
 	const demoLintCmd = vscode.commands.registerCommand(
 		'accessibility-linter.demoLint',
 		async () => {
-		const editor = vscode.window.activeTextEditor;
-		if (!editor) {
-			vscode.window.showWarningMessage('No active editor.');
-			return;
-		}
-		const doc = editor.document;
-		const css = doc.getText();
+			const editor = vscode.window.activeTextEditor;
+			if (!editor) {
+				vscode.window.showWarningMessage('No active editor.');
+				return;
+			}
+			const doc = editor.document;
+			const css = doc.getText();
 
-		const ast = await parse(css);
-		const issues = await runRules(ast);
+			const root = await parse(css);
+			const issues = await runRules(root);
 
-		if (issues.length === 0) {
-			vscode.window.showInformationMessage('No demo issues found.');
-		} else {
-			vscode.window.showWarningMessage(
-			`Demo lint found ${issues.length} issue(s): ${issues[0].message}`
-			);
-		}
+			const result = root.toResult();
+    		const outputCss = result.css;
+
+			const outputDoc = await vscode.workspace.openTextDocument({
+				content: outputCss,
+				language: 'css'
+			});
+			vscode.window.showTextDocument(outputDoc, vscode.ViewColumn.Beside);
+
+			if (issues.length === 0) {
+				vscode.window.showInformationMessage('No demo issues found.');
+			} else {
+				vscode.window.showWarningMessage(
+				`Demo lint found ${issues.length} issue(s): ${issues[0].message}`
+				);
+			}
 		}
 	);
 
