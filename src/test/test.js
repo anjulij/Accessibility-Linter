@@ -22,4 +22,16 @@ describe('hasColorDeclaration', () => {
     });
 });
 
+describe('testRule', () => {
+    test('Given a rule without a color declaration, return null.', () => {
+        const css = 'test { font-size: 16px; line-height: 1.5; }';
+        const root = postcss.parse(css);
+        expect(getColorMap(root)).toBeNull();
+    });
 
+    test('Given a rule with only color declaration, output a hashmap with <selector, color>. ', () => {
+        const css = 'h1 { color: #f00; }';
+        const root = postcss.parse(css);
+        expect(getColorMap(root)).toEqual({ 'h1': '#f00' });
+    });
+});
