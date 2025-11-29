@@ -1,41 +1,36 @@
 {
-  "name": "accessibility-linter",
-  "displayName": "accessibility-linter",
-  "description": "",
+  "name": "accessilinter",
+  "displayName": "AccessiLinter",
+  "description": "CSS accessibility linter ",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.104.0"
+    "vscode": "^1.106.1"
   },
   "categories": [
     "Other"
   ],
   "activationEvents": [],
-  "main": "./out/extension.js",
+  "main": "./extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "accessibility-linter.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "commands": [{
+      "command": "accessilinter.helloWorld",
+      "title": "Hello World"
+    }]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src",
+    "lint": "eslint .",
+    "pretest": "npm run lint",
     "test": "vscode-test"
   },
+  "dependencies": {
+    "postcss": "^8.4.31"
+  },
   "devDependencies": {
-    "@types/vscode": "^1.104.0",
+    "@types/vscode": "^1.106.1",
     "@types/mocha": "^10.0.10",
     "@types/node": "22.x",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "eslint": "^9.34.0",
-    "typescript": "^5.9.2",
-    "@vscode/test-cli": "^0.0.11",
+    "eslint": "^9.39.1",
+    "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2"
   }
 }
