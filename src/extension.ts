@@ -8,8 +8,7 @@ import {
   AUTH_REQUIRED,
   AuthState
 } from './auth';
-import { stringify } from 'querystring';
-
+import { runLint } from './linter';
 
 async function parse(css: string): Promise<Root> {
 	const root = postcss.parse(css)
@@ -160,14 +159,18 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
+	const lintCmd = vscode.commands.registerCommand(
+		'accessibility-linter.lint',
+		runLint
+	);
+
 	const authListener = observeAuthChanges(async () => {
 		const state = await getAuthStatus();
 		handleAuthState(state, {
 		onSignedIn: user => {
 			console.log(`GitHub session changed: signed in as ${user ?? 'GitHub user'}.`);
 		},
-		onCancelled: () => {
-		},
+		onCancelled: () => {},
 		onSignedOut: () => {
 			console.log('GitHub session changed: signed out.');
 		}
@@ -175,13 +178,14 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(
-    helloCmd,
-    loginCmd,
-    statusCmd,
-    syncCmd,
-    demoLintCmd,
-    authListener
-  );
+		helloCmd,
+		loginCmd,
+		statusCmd,
+		syncCmd,
+		demoLintCmd,
+		lintCmd,
+		authListener
+	);
 }
 
 export function deactivate() {}
