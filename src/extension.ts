@@ -9,6 +9,7 @@ import {
   AuthState
 } from './auth';
 import { stringify } from 'querystring';
+import { startLinting, runLint } from './linter';
 
 
 async function parse(css: string): Promise<Root> {
@@ -54,8 +55,8 @@ function handleAuthState(
 
 
 
-export function activate(context: vscode.ExtensionContext) {
-  console.log('Your extension "accessibility-linter" is now active!');
+export async function activate(context: vscode.ExtensionContext) {
+	console.log('Your extension "accessibility-linter" is now active!');
 
 	const helloCmd = vscode.commands.registerCommand(
 		'accessibility-linter.helloWorld',
@@ -82,6 +83,42 @@ export function activate(context: vscode.ExtensionContext) {
 					vscode.window.showWarningMessage('Not signed in to GitHub.');
 				}
 			});
+		}
+	);
+
+	const lintCmd = vscode.commands.registerCommand(
+		'accessibility-linter.lint',
+		async () => {
+			try {
+				const state = await getAuthStatus();
+				if (state.status !== 'signed-in') {
+					vscode.window.showErrorMessage('Please first log into GitHub.');
+					return;
+				}
+
+				// User is authenticated, run the linter
+				const editor = vscode.window.activeTextEditor;
+				if (!editor) {
+					vscode.window.showErrorMessage('No active editor. Please open a CSS file.');
+					return;
+				}
+
+				const css = editor.document.getText();
+				if (!css.trim()) {
+					vscode.window.showErrorMessage('The editor is empty. Please add CSS code.');
+					return;
+				}
+
+				// Call the linter's lint logic (from linter.ts)
+				try {
+					runLint();
+				} catch (err) {
+					console.error('Failed to run linter:', err);
+				}
+			} catch (err) {
+				console.error('Failed to check auth status for lint:', err);
+				vscode.window.showErrorMessage('An error occurred while checking authentication.');
+			}
 		}
 	);
 
@@ -127,39 +164,6 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	);
 
-	const demoLintCmd = vscode.commands.registerCommand(
-		'accessibility-linter.demoLint',
-		async () => {
-			const editor = vscode.window.activeTextEditor;
-			if (!editor) {
-				vscode.window.showWarningMessage('No active editor.');
-				return;
-			}
-			const doc = editor.document;
-			const css = doc.getText();
-
-			const root = await parse(css);
-			const issues = await runRules(root);
-
-			const result = root.toResult();
-    		const outputCss = result.css;
-
-			const outputDoc = await vscode.workspace.openTextDocument({
-				content: outputCss,
-				language: 'css'
-			});
-			vscode.window.showTextDocument(outputDoc, vscode.ViewColumn.Beside);
-
-			if (issues.length === 0) {
-				vscode.window.showInformationMessage('No demo issues found.');
-			} else {
-				vscode.window.showWarningMessage(
-				`Demo lint found ${issues.length} issue(s): ${issues[0].message}`
-				);
-			}
-		}
-	);
-
 	const authListener = observeAuthChanges(async () => {
 		const state = await getAuthStatus();
 		handleAuthState(state, {
@@ -179,7 +183,7 @@ export function activate(context: vscode.ExtensionContext) {
     loginCmd,
     statusCmd,
     syncCmd,
-    demoLintCmd,
+    lintCmd,
     authListener
   );
 }
