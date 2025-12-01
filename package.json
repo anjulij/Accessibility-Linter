@@ -11,7 +11,10 @@
   ],
   "activationEvents": [
     "onCommand:accessibility-linter.helloWorld",
-    "onCommand:accessibility-linter.demoLint"
+    "onCommand:accessibility-linter.loginWithGitHub",
+    "onCommand:accessibility-linter.showAuthStatus",
+    "onCommand:accessibility-linter.syncSettingsWithGitHub",
+    "onCommand:accessibility-linter.lint"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -21,8 +24,20 @@
         "title": "Accessibility Linter: Hello World"
       },
       {
-        "command": "accessibility-linter.demoLint",
-        "title": "Accessibility Linter: Demo Lint"
+        "command": "accessibility-linter.loginWithGitHub",
+        "title": "Accessibility Linter: Sign In With GitHub"
+      },
+      {
+        "command": "accessibility-linter.showAuthStatus",
+        "title": "Accessibility Linter: Show Auth Status"
+      },
+      {
+        "command": "accessibility-linter.syncSettingsWithGitHub",
+        "title": "Accessibility Linter: Sync Settings With GitHub"
+      },
+      {
+        "command": "accessibility-linter.lint",
+        "title": "Accessibility Linter: Lint CSS"
       }
     ]
   },
