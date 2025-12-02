@@ -1,5 +1,5 @@
 const postcss = require('postcss');
-const { hasColor } = require('./AST.js');
+const { hasColor } = require('./linter.ts');
 
 
 describe('hasColorDeclaration', () => {
@@ -73,3 +73,4 @@ describe('CSS Color Extraction Tests', () => {
         expect(getColorMap(root)).toEqual({ 'h1': '#f00' });
     });
 });
+
