@@ -1,71 +1,65 @@
-# accessibility-linter README
+# VS Code Accessibility Linter
 
-This is the README for your extension "accessibility-linter". After writing up a brief description, we recommend including the following sections.
+A Visual Studio Code extension designed to validate CSS files and verify contrast ratios against required thresholds.
 
-## Features
+## Table of Contents
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Building the Project](#building-the-project)
+- [Running and Debugging](#running-and-debugging)
+- [Usage](#usage)
+- [Authentication](#authentication)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## Prerequisites
+This project uses several Node.js modules, including:
+- TypeScript
+- PostCSS
 
-For example if there is an image subfolder under your extension project workspace:
+These are automatically handled via the `package.json` configuration.
 
-\!\[feature X\]\(images/feature-x.png\)
+## Installation
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+To set up the project in your local development environment:
 
-## Requirements
+1. **Clone the Repository**
+   First, clone the project repository from GitHub and obtain it in your local environment.
+   ```bash
+   git clone https://github.com/anjulij/Accessibility-Linter.git
+   ```
+2. **Open in VSCode:** Navigate to the retrieved folder and open it in Visual Studio Code.
+3. **Install Dependencies:** Install the required dependencies (including TypeScript and PostCSS) by running the following command in the terminal:
+```bash
+npm install
+```
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## Building the Project
+- **Automatic:** TypeScript is automatically compiled when launching the debugger.
 
-## Extension Settings
+- **Manual:** If you need to manually build the project, run:
+  ```bash
+  npm run build
+  ```
+## Running and Debugging
+To test the extension, you must launch it in the **Extension Development Host.**
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+  1. Press **F5** or select **Run > Start Debugging** from the menu.
+  2. A new Visual Studio Code window (the Extension Development Host) will open.
 
-For example:
+ ## Authentication 
+ 1. Under **Account** in VSCode you will see a prompt to Sign in with Github to use Accessibility Linter.
+ 2. Follow the prompts to authenticate using VSCode's built-in system.
 
-This extension contributes the following settings:
+    
+  ## Usage
+  Once the Extension Development Host is running, you can use the linter on your files.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+  1. **Open a File:** Open a CSS file in the new window.
+  2. **Run the Linter:**
+     -  Open the Command Palette (**Ctrl+Shift+P** on Windows / **Cmd+Shift+P** on macOS).
+     -  Run the command: Accessibility Linter: Lint.
+  3. **View Results:** The extension will display a message indicating whether the contrast ratio meets the required threshold.
+ 
 
-## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+   
