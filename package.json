@@ -14,7 +14,8 @@
     "onCommand:accessibility-linter.loginWithGitHub",
     "onCommand:accessibility-linter.showAuthStatus",
     "onCommand:accessibility-linter.syncSettingsWithGitHub",
-    "onCommand:accessibility-linter.lint"
+    "onCommand:accessibility-linter.lint",
+    "onCommand:accessibility-linter.demoLint"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -38,6 +39,10 @@
       {
         "command": "accessibility-linter.lint",
         "title": "Accessibility Linter: Lint CSS"
+      },
+      {
+        "command": "accessibility-linter.demoLint",
+        "title": "Accessibility Linter: Demo Lint (AST Example)"
       }
     ]
   },

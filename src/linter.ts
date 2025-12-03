@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import postcss, { Root } from 'postcss';
+import { requireAuth, AUTH_REQUIRED } from './auth';
 
 // Helper function to check if CSS contains color declarations
 function hasColor(root: Root): boolean {
@@ -113,66 +114,80 @@ function checkContrast(prunedRoot: Root): boolean {
   return isAccessible;
 }
 
-// Activate the linter (registers a command that runs the color contrast checks)
+/* // Activate the linter (registers a command that runs the color contrast checks)
 export function activate(context: vscode.ExtensionContext) {
   console.log('Congratulations, your extension "accessibility - linter" is now active!');
 
-  const disposable = vscode.commands.registerCommand('accessibility-linter.lint', () => {
-    runLint();
-  });
+  const disposable = vscode.commands.registerCommand('accessibility-linter.lint', runLint);
 
   context.subscriptions.push(disposable);
-}
+}*/
 
 // The actual linting logic that can be called from extension.ts
-export function runLint() {
-  const editor = vscode.window.activeTextEditor;
-
-  if (!editor) {
-    vscode.window.showErrorMessage('No active editor. Please open a CSS file.');
-    return;
-  }
-
-  const css = editor.document.getText();
-
-  if (!css.trim()) {
-    vscode.window.showErrorMessage('The editor is empty. Please add CSS code.');
-    return;
-  }
-
+export async function runLint() {
   try {
-    const root = postcss.parse(css) as Root;
+    await requireAuth(async token => {
 
-    const containsColor = hasColor(root);
+      const editor = vscode.window.activeTextEditor;
 
-    if (!containsColor) {
-      vscode.window.showInformationMessage('No color declarations found in CSS.');
+      if (!editor) {
+        vscode.window.showErrorMessage('No active editor. Please open a CSS file.');
+        return;
+      }
+
+      const css = editor.document.getText();
+
+      if (!css.trim()) {
+        vscode.window.showErrorMessage('The editor is empty. Please add CSS code.');
+        return;
+      }
+
+      try {
+        const root = postcss.parse(css) as Root;
+
+        const containsColor = hasColor(root);
+
+        if (!containsColor) {
+          vscode.window.showInformationMessage('No color declarations found in CSS.');
+          return;
+        }
+
+        const prunedRoot = pruneColorNodes(root);
+
+        const isAccessible = checkContrast(prunedRoot);
+
+        if (isAccessible) {
+          vscode.window.showInformationMessage('All color contrasts meet WCAG AA standards!');
+        } else {
+          vscode.window.showWarningMessage(
+            'Some color contrasts do not meet WCAG AA standards (minimum 4.5:1 ratio required).'
+          );
+        }
+
+        console.log('Has color declarations:', containsColor);
+        console.log('Contrast is accessible:', isAccessible);
+        console.log('Pruned CSS AST:', JSON.stringify(prunedRoot, null, 2));
+      } catch (err: any) {
+        vscode.window.showErrorMessage(`Error parsing CSS: ${err.message}`);
+        console.error('CSS parsing error:', err);
+      }
+    });
+  } catch (err: any) {
+    // Cancel login or something
+    if (err instanceof Error && err.message === AUTH_REQUIRED) {
+      vscode.window.showWarningMessage('GitHub sign-in is required to run the Accessibility Linter.');
       return;
     }
-
-    const prunedRoot = pruneColorNodes(root);
-
-    const isAccessible = checkContrast(prunedRoot);
-
-    if (isAccessible) {
-      vscode.window.showInformationMessage('✓ All color contrasts meet WCAG AA standards!');
-    } else {
-      vscode.window.showWarningMessage('⚠ Some color contrasts do not meet WCAG AA standards (minimum 4.5:1 ratio required).');
-    }
-
-    console.log('Has color declarations:', containsColor);
-    console.log('Contrast is accessible:', isAccessible);
-    console.log('Pruned CSS AST:', JSON.stringify(prunedRoot, null, 2));
-
-  } catch (err: any) {
-    vscode.window.showErrorMessage(`Error parsing CSS: ${err.message}`);
-    console.error('CSS parsing error:', err);
+    vscode.window.showErrorMessage('Unexpected error while running Accessibility Linter.');
+    console.error(err);
   }
 }
 
+/*
 export function deactivate() {}
 
 // compatibility exports to match the previous JS module shape
 export const startLinting = activate;
 
 export default { activate, deactivate, startLinting, runLint };
+*/
